@@ -28,10 +28,5 @@ namespace MatchGems.Core
         private float CellWorldSize => _cellSize / _pixelPerUnit;
 
         #endregion 公開屬性
-
-        private void Start()
-        {
-            
-        }
     }
 }

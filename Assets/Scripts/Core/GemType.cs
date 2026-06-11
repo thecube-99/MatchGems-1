@@ -1,7 +1,7 @@
 ﻿namespace MatchGems.Core
 {
     /// <summary>
-    /// 寶石種類
+    /// [Enum]寶石種類
     /// </summary>
     public enum GemType
     {
@@ -24,6 +24,10 @@
         /// <summary>
         /// 紫色(暗)
         /// </summary>
-        Purple
+        Purple,
+        /// <summary>
+        /// 粉色(心)
+        /// </summary>
+        Pink
     }
 }
