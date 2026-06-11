@@ -13,14 +13,25 @@ namespace MatchGems.Core
         [SerializeField] private float _pixelPerUnit = 64f;
         #endregion 基本參數
 
+        #region 公開屬性
+        /// <summary>
+        /// 單一格的像素尺寸
+        /// </summary>
+        public int CellSize => _cellSize;
+        /// <summary>
+        /// 一個Unity單位對應的像素值
+        /// </summary>
+        private float PixelPerUnit => _pixelPerUnit;
+        /// <summary>
+        /// 單一格在世界座標的單位比例
+        /// </summary>
+        private float CellWorldSize => _cellSize / _pixelPerUnit;
+
+        #endregion 公開屬性
+
         private void Start()
         {
-            Debug.Log(_cellSize);
-        }
-
-        private void Update()
-        {
-            Debug.Log(_pixelPerUnit);
+            
         }
     }
 }
