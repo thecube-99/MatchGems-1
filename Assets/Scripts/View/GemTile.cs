@@ -27,7 +27,10 @@ namespace MatchGems.View
                 return _spriteRenderer; 
             }
         }
-        private Sprite _defaultSprite;
+        /// <summary>
+        /// [靜態]共用Sprite變數
+        /// </summary>
+        private static Sprite _defaultSprite;
         #endregion 基本參數
 
         #region 公開功能
@@ -46,7 +49,7 @@ namespace MatchGems.View
         /// <summary>
         /// 取得預設Sprite圖片(白色)
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Sprite圖片</returns>
         private Sprite GetDefaultSprite()
         {
             if (_defaultSprite == null)
