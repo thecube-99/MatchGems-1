@@ -1,4 +1,6 @@
-﻿namespace MatchGems.Core
+﻿using System;
+
+namespace MatchGems.Core
 {
     public class BoardModel
     {
@@ -28,8 +30,8 @@
         /// <param name="h">高</param>
         public BoardModel(int w, int h) 
         {
-            Width = w;
-            Height = h;
+            Width = Math.Max(1, w);//至少為1的安全機制
+            Height = Math.Max(1, h);//至少為1的安全機制
             _gems = new GemData[Width, Height];
         }
         #endregion 建構式
@@ -61,7 +63,8 @@
         /// <returns>寶石資料</returns>
         public GemData GetGem(CellCoord coord)
         {
-            return _gems[coord.X, coord.Y];
+            //三元運算，條件判斷(是/否) ? 是(回應) : 否(回應)
+            return IsInside(coord) ? _gems[coord.X, coord.Y] : null;
         }
         /// <summary>
         /// 取得指定格子的寶石
@@ -71,9 +74,50 @@
         /// <returns>寶石資料</returns>
         public GemData GetGem(int x, int y)
         {
-            return _gems[x, y];
+            return IsInside(x, y) ? _gems[x, y] : null;
         }
         #endregion 公開方法
+
+        #region 安全查驗功能
+        /// <summary>
+        /// 範圍檢查
+        /// </summary>
+        /// <param name="coord">座標資料組</param>
+        /// <returns>是/否</returns>
+        public bool IsInside(CellCoord coord)
+        {
+            return coord.X >= 0 && coord.X < Width && coord.Y >= 0 && coord.Y < Height;
+        }
+        /// <summary>
+        /// 範圍檢查
+        /// </summary>
+        /// <param name="x">座標X</param>
+        /// <param name="y">座標Y</param>
+        /// <returns>是/否</returns>
+        public bool IsInside(int x, int y)
+        {
+            return x >= 0 && x < Width && y >= 0 && y < Height;
+        }
+        /// <summary>
+        /// 座標位置是否存在寶石
+        /// </summary>
+        /// <param name="coord">座標資料組</param>
+        /// <returns>是/否</returns>
+        public bool HasGem(CellCoord coord)
+        {
+            return IsInside(coord) && _gems[coord.X, coord.Y] != null;
+        }
+        /// <summary>
+        /// 座標位置是否存在寶石
+        /// </summary>
+        /// <param name="x">座標X</param>
+        /// <param name="y">座標Y</param>
+        /// <returns>是/否</returns>
+        public bool HasGem(int x, int y)
+        {
+            return IsInside(x, y) && _gems[x, y] != null;
+        }
+        #endregion 安全查驗功能
     }
 
 }

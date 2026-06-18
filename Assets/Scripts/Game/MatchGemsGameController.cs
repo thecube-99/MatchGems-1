@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace MatchGems.Game
 {
+    /// <summary>
+    /// 遊戲流程主程式(控制)
+    /// </summary>
     public class MatchGemsGameController : MonoBehaviour
     {
         #region 基本參數
@@ -27,6 +30,7 @@ namespace MatchGems.Game
             }
 
             _boardView.Build(_boardModel);
+            Debug.Log(_boardModel.GetGem(0,10));
         }
         #endregion 生命週期
     }
