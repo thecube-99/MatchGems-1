@@ -37,7 +37,8 @@ namespace MatchGems.View
         /// <param name="board">棋盤資料</param>
         public void Build(BoardModel board)
         {
-            //清理舊資料
+            //清理舊視覺資料
+            //ClearTiles();
             //產生與資料相同的視覺尺寸
             _tiles = new GemTile[board.Width, board.Height];
 
@@ -46,6 +47,7 @@ namespace MatchGems.View
                 for (int x = 0; x < board.Width; x++)
                 {
                     _tiles[x, y] = CreateTile(x, y);
+                    _tiles[x, y].SetGem(GemType.Pink);
                 }
             }
         }
@@ -63,13 +65,20 @@ namespace MatchGems.View
             Vector3 position = new Vector3(x * CellWorldSize, y * CellWorldSize, 0);
             return Instantiate(_tilePrefab, position, Quaternion.identity, transform);
         }
-        #endregion 私有方法
-
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        /// <summary>
+        /// 清除所有寶石磚
+        /// </summary>
+        private void ClearTiles()
         {
-
+            //Destroy(transform.GetChild(0).gameObject);
+            Debug.Log(transform.childCount);
+            //一種連發的 if
+            /*while (transform.childCount > 0)
+            {//不斷刪除第一個子物件，直到歸0為止
+                Destroy(transform.GetChild(0).gameObject);
+            }*/
         }
+        #endregion 私有方法
     }
 }
 

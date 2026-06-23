@@ -30,7 +30,7 @@ namespace MatchGems.Game
             }
 
             _boardView.Build(_boardModel);
-            Debug.Log(_boardModel.GetGem(0,10));
+            
         }
         #endregion 生命週期
     }

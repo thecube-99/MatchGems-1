@@ -16,8 +16,8 @@ namespace MatchGems.View
         /// <summary>
         /// 視覺渲染延遲讀取
         /// </summary>
-        private SpriteRenderer SpriteRenderer
-        {
+        private SpriteRenderer SpriteRenderer => _spriteRenderer == null ? _spriteRenderer = GetComponent<SpriteRenderer>() : _spriteRenderer;
+        /*{
             get
             {
                 if (_spriteRenderer == null)
@@ -26,7 +26,7 @@ namespace MatchGems.View
                 }
                 return _spriteRenderer; 
             }
-        }
+        }*/
         /// <summary>
         /// [靜態]共用Sprite變數
         /// </summary>
@@ -42,6 +42,7 @@ namespace MatchGems.View
         {
             SpriteRenderer.sprite = GetDefaultSprite();
             SpriteRenderer.color = GetColor(gemType);
+            transform.localScale = Vector3.one * _tileScale;
         }
         #endregion 公開功能
 
@@ -57,8 +58,8 @@ namespace MatchGems.View
                 Texture2D texture = new Texture2D(1,1);//建立最小單位的貼圖
                 texture.SetPixel(0, 0, Color.white);
                 texture.Apply();
-
-                _defaultSprite = Sprite.Create(texture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
+                //用指定參數格式建立圖片(貼圖, 預設矩形定位&尺寸, 錨點位置正中, 一單位容納像素值)
+                _defaultSprite = Sprite.Create(texture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 1);
             }
             return _defaultSprite;
         }
@@ -82,10 +83,5 @@ namespace MatchGems.View
             return Color.white;
         }
         #endregion 私有功能
-
-        private void Start()
-        {
-            SetGem(GemType.Yellow);
-        }
     }
 }
