@@ -38,10 +38,20 @@ namespace MatchGems.View
         /// 依照設定的寶石種類更新視覺
         /// </summary>
         /// <param name="gemType">寶石種類</param>
-        public void SetGem(GemType gemType)
+        /*public void SetGem(GemType gemType)
         {
             SpriteRenderer.sprite = GetDefaultSprite();
             SpriteRenderer.color = GetColor(gemType);
+            transform.localScale = Vector3.one * _tileScale;
+        }*/
+        /// <summary>
+        /// 設定寶石資料並更新視覺
+        /// </summary>
+        /// <param name="gemData">寶石資料</param>
+        public void SetGem(GemData gemData)
+        {
+            SpriteRenderer.sprite = GetDefaultSprite();
+            SpriteRenderer.color = GetColor(gemData.Color);
             transform.localScale = Vector3.one * _tileScale;
         }
         #endregion 公開功能
