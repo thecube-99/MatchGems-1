@@ -12,11 +12,11 @@ namespace MatchGems.Core
         /// <summary>
         /// 原點
         /// </summary>
-        private Vector3 _origin;
+        private readonly Vector3 _origin;
         /// <summary>
         /// 世界單位尺寸
         /// </summary>
-        private float _cellWorldSize;
+        private readonly float _cellWorldSize;
         #endregion 基本參數
 
         #region 建構式
