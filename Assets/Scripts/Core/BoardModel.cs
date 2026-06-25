@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace MatchGems.Core
 {
@@ -76,6 +77,22 @@ namespace MatchGems.Core
         {
             return IsInside(x, y) ? _gems[x, y] : null;
         }
+
+        /// <summary>
+        /// 交換兩格的寶石資料
+        /// </summary>
+        /// <param name="from">起始</param>
+        /// <param name="to">目標</param>
+        public void SwapGems(CellCoord from, CellCoord to)
+        {
+            Debug.Log($"{_gems[from.X, from.Y].Color}→{_gems[to.X, to.Y].Color}");
+
+            GemData tmp = _gems[to.X, to.Y];
+            _gems[to.X, to.Y] = _gems[from.X, from.Y];
+            _gems[from.X, from.Y] = tmp;
+
+            Debug.Log($"{_gems[from.X, from.Y].Color}｜{_gems[to.X, to.Y].Color}");
+        }
         #endregion 公開方法
 
         #region 安全查驗功能
@@ -116,6 +133,16 @@ namespace MatchGems.Core
         public bool HasGem(int x, int y)
         {
             return IsInside(x, y) && _gems[x, y] != null;
+        }
+        /// <summary>
+        /// 檢查兩格是否為相鄰為置
+        /// </summary>
+        /// <param name="a">A格座標</param>
+        /// <param name="b">B格座標</param>
+        /// <returns></returns>
+        public bool IsAdjacent(CellCoord a, CellCoord b)
+        {
+            return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y) == 1;
         }
         #endregion 安全查驗功能
     }

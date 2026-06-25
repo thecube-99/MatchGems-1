@@ -58,6 +58,19 @@ namespace MatchGems.Game
         private void ConfigureInput()
         {
             _boardInput.Configure(_gridMapper);//CellSize先走預設
+            _boardInput.SwapAction = TrySwap;
+        }
+
+        /// <summary>
+        /// 嘗試交換兩格的寶石資料
+        /// </summary>
+        /// <param name="from">起始</param>
+        /// <param name="to">目標</param>
+        private void TrySwap(CellCoord from, CellCoord to)
+        {
+            if (!_boardModel.IsInside(to)) return;
+            if (!_boardModel.IsAdjacent(from, to)) return;
+            _boardModel.SwapGems(from, to);
         }
         #endregion 私有方法
     }
