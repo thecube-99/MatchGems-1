@@ -1,6 +1,6 @@
 ﻿using MatchGems.Core;
 using MatchGems.View;
-using MatchGems.Input;
+using MatchGems.Inputs;
 using UnityEngine;
 
 namespace MatchGems.Game
@@ -57,7 +57,7 @@ namespace MatchGems.Game
 
         private void ConfigureInput()
         {
-            _boardInput.Configure(_gridMapper);
+            _boardInput.Configure(_gridMapper);//CellSize先走預設
         }
         #endregion 私有方法
     }
