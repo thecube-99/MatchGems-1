@@ -78,6 +78,11 @@ namespace MatchGems.Core
             return IsInside(x, y) ? _gems[x, y] : null;
         }
 
+        public GemType GetGemColor(CellCoord coord)
+        {
+            return GetGem(coord).Color;
+        }
+
         /// <summary>
         /// 交換兩格的寶石資料
         /// </summary>

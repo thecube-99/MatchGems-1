@@ -17,7 +17,10 @@ namespace MatchGems.Game
         [SerializeField] private int _height = 8;
         private BoardModel _boardModel;
         private GridMapper _gridMapper;
-
+        /// <summary>
+        /// 預建立的配對檢查器
+        /// </summary>
+        private readonly MatchFinder _matchFinder = new MatchFinder();
         #endregion 基本參數
 
         #region 生命週期
@@ -61,7 +64,9 @@ namespace MatchGems.Game
         {
             _boardView.Build(_boardModel, _gridMapper);
         }
-
+        /// <summary>
+        /// 設置輸入操作
+        /// </summary>
         private void ConfigureInput()
         {
             _boardInput.Configure(_gridMapper);//CellSize先走預設
@@ -79,6 +84,18 @@ namespace MatchGems.Game
             if (!_boardModel.IsAdjacent(from, to)) return;
             _boardModel.SwapGems(from, to);
             BuildView();
+            //執行配對演算邏輯
+            MatchLog();
+        }
+
+        private void MatchLog()
+        {
+            //掃描結果
+            MatchResult result = _matchFinder.FindMatches(_boardModel);
+
+            if (!result.HasMatch) return;
+
+            Debug.Log($"配到{result.LineCount}條");
         }
         #endregion 私有方法
     }
