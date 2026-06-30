@@ -69,8 +69,17 @@ namespace MatchGems.Inputs
         {
             _isDragging = true;
             _dragStartPos = downPos;
-            _dragStartCoord = _gridMapper.ToCell(_dragStartPos);
+            _dragStartCoord = _gridMapper.ToCell(ScreenToWorldPos(_dragStartPos));
             Debug.Log(_dragStartCoord.pos);
+        }
+        /// <summary>
+        /// 螢幕座標位置轉世界座標
+        /// </summary>
+        /// <param name="screenPos">螢幕座標</param>
+        /// <returns>對應世界座標</returns>
+        private Vector3 ScreenToWorldPos(Vector2 screenPos)
+        {//從攝影機發射射線到世界(三維空間)得到座標轉換
+            return _camera.ScreenToWorldPoint(screenPos);
         }
         /// <summary>
         /// 鬆開結束邏輯

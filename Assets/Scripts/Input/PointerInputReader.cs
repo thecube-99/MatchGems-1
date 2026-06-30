@@ -3,7 +3,7 @@
 namespace MatchGems.Inputs
 {
     /// <summary>
-    /// 指標輸入讀取器
+    /// 指標輸入(螢幕座標)讀取器
     /// </summary>
     public class PointerInputReader
     {
