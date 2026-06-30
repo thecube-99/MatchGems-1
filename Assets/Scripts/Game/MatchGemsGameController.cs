@@ -25,7 +25,7 @@ namespace MatchGems.Game
         {
             CreateBoard();
             CreateMapper();
-            _boardView.Build(_boardModel, _gridMapper);
+            BuildView();
             ConfigureInput();
         }
         #endregion 生命週期
@@ -54,6 +54,13 @@ namespace MatchGems.Game
             //建構Root物件座標即為原點
             _gridMapper = new GridMapper(_boardView.transform.position, _boardView.CellWorldSize);
         }
+        /// <summary>
+        /// 以資料驅動視覺
+        /// </summary>
+        private void BuildView()
+        {
+            _boardView.Build(_boardModel, _gridMapper);
+        }
 
         private void ConfigureInput()
         {
@@ -71,6 +78,7 @@ namespace MatchGems.Game
             if (!_boardModel.IsInside(to)) return;
             if (!_boardModel.IsAdjacent(from, to)) return;
             _boardModel.SwapGems(from, to);
+            BuildView();
         }
         #endregion 私有方法
     }

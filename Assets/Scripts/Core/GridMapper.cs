@@ -51,7 +51,7 @@ namespace MatchGems.Core
         public CellCoord ToCell(Vector3 worldPos)
         {
             Vector3 local = worldPos - _origin;
-            int x = (int)(local.x + _cellWorldSize *0.5f / _cellWorldSize);
+            int x = (int)(local.x + _cellWorldSize * 0.5f / _cellWorldSize);
             int y = (int)(local.y + _cellWorldSize * 0.5f / _cellWorldSize);
             return new CellCoord(x, y);
         }
