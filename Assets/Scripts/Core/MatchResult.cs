@@ -16,6 +16,13 @@ namespace MatchGems.Core
         #endregion 唯讀紀錄
 
         #region 公開資訊
+        /// <summary>
+        /// 連線清單公開接口
+        /// </summary>
+        public List<MatchLine> Lines => _lines;
+        /// <summary>
+        /// 連線數
+        /// </summary>
         public int LineCount => _lines.Count;
         /// <summary>
         /// 是否有產生任何配對

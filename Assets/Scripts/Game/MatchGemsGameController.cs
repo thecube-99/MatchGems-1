@@ -95,7 +95,12 @@ namespace MatchGems.Game
 
             if (!result.HasMatch) return;
 
-            Debug.Log($"配到{result.LineCount}條");
+            //Debug.Log($"配到{result.LineCount}條");
+
+            foreach (MatchLine line in result.Lines)
+            {
+                _boardModel.ClearGems(line.Coords);
+            }
         }
         #endregion 私有方法
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MatchGems.Core
@@ -95,6 +96,27 @@ namespace MatchGems.Core
             _gems[to.X, to.Y] = _gems[from.X, from.Y];
             _gems[from.X, from.Y] = tmp;
            // Debug.Log($"{_gems[from.X, from.Y].Color}｜{_gems[to.X, to.Y].Color}");
+        }
+
+        /// <summary>
+        /// 清除指定格子座標的資料(設為null)
+        /// </summary>
+        /// <param name="coord">格子座標</param>
+        public void ClearGem(CellCoord coord)
+        {
+            if (!IsInside(coord)) return;
+            _gems[coord.X, coord.Y] = null;
+        }
+        /// <summary>
+        /// 清除一整批格子清單的資料
+        /// </summary>
+        /// <param name="coords">格子清單</param>
+        public void ClearGems(List<CellCoord> coords)
+        {
+            for (int i = 0; i < coords.Count; i++) 
+            {
+                ClearGem(coords[i]);
+            }
         }
         #endregion 公開方法
 
