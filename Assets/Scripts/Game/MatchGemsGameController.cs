@@ -98,10 +98,7 @@ namespace MatchGems.Game
 
             if (!result.HasMatch) return;
             //消除
-            foreach (MatchLine line in result.Lines)
-            {
-                _boardModel.ClearGems(line.Coords);
-            }
+            _boardModel.ClearGems(result);
             //落珠
             _gravityResolver.Resolve(_boardModel);
             //補珠

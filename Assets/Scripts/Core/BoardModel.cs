@@ -128,6 +128,15 @@ namespace MatchGems.Core
                 ClearGem(coords[i]);
             }
         }
+
+        /// <summary>
+        /// 依照配對結果清除寶石
+        /// </summary>
+        /// <param name="result">配對結果</param>
+        public void ClearGems(MatchResult result)
+        {
+            ClearGems(result.GetUniqueCoords());
+        }
         #endregion 公開方法
 
         #region 安全查驗功能

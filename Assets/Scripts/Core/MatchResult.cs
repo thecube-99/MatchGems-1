@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace MatchGems.Core
@@ -17,10 +18,6 @@ namespace MatchGems.Core
 
         #region 公開資訊
         /// <summary>
-        /// 連線清單公開接口
-        /// </summary>
-        public List<MatchLine> Lines => _lines;
-        /// <summary>
         /// 連線數
         /// </summary>
         public int LineCount => _lines.Count;
@@ -37,6 +34,28 @@ namespace MatchGems.Core
         public void AddLine(MatchLine line)
         {
             _lines.Add(line);
+        }
+
+        /// <summary>
+        /// 取得完全不重複的配對座標格清單
+        /// </summary>
+        /// <returns>不重複的配對座標格清單</returns>
+        public List<CellCoord> GetUniqueCoords()
+        {
+            List<CellCoord> coords = new List<CellCoord>();
+
+            for (int i = 0; i < _lines.Count; i++)
+            {//抽線
+                for (int j = 0; j < _lines[i].Coords.Count; j++)
+                {//抽格
+                    if (!coords.Contains(_lines[i].Coords[j]))
+                    {
+                        coords.Add(_lines[i].Coords[j]);
+                    }
+                }
+            }
+
+            return coords;
         }
         #endregion 公開方法
 
