@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MatchGems.View;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -57,6 +58,15 @@ namespace MatchGems.Core
         public void SetGem(int x, int y, GemType gemType)
         {
             _gems[x, y] = new GemData(gemType);
+        }
+        /// <summary>
+        /// 設定指定格子的寶石
+        /// </summary>
+        /// <param name="coord">定位資料</param>
+        /// <param name="data">現存的寶石資料</param>
+        public void SetGem(CellCoord coord, GemData data)
+        {
+            _gems[coord.X, coord.Y] = data;
         }
         /// <summary>
         /// 取得指定格子的寶石

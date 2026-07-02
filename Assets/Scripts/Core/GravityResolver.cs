@@ -2,6 +2,9 @@
 
 namespace MatchGems.Core
 {
+    /// <summary>
+    /// 下落(重力)解析器
+    /// </summary>
     public class GravityResolver
     {
         #region 公開方法
