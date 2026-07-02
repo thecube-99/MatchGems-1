@@ -21,6 +21,14 @@ namespace MatchGems.Game
         /// 預建立的配對檢查器
         /// </summary>
         private readonly MatchFinder _matchFinder = new MatchFinder();
+        /// <summary>
+        /// 預建立的落下解析器
+        /// </summary>
+        private readonly GravityResolver _gravityResolver = new GravityResolver();
+        /// <summary>
+        /// 預建立的寶石填充服務
+        /// </summary>
+        private readonly FillService _fillService = new FillService();
         #endregion 基本參數
 
         #region 生命週期
@@ -41,13 +49,7 @@ namespace MatchGems.Game
         {
             _boardModel = new BoardModel(_width, _height);
 
-            for (int y = 0; y < _height; y++)
-            {
-                for (int x = 0; x < _width; x++)
-                {
-                    _boardModel.SetGem(x, y, (GemType)Random.Range(0, 6));
-                }
-            }
+            _fillService.Fill(_boardModel);
         }
         /// <summary>
         /// 建立轉換器
@@ -83,24 +85,27 @@ namespace MatchGems.Game
             if (!_boardModel.IsInside(to)) return;
             if (!_boardModel.IsAdjacent(from, to)) return;
             _boardModel.SwapGems(from, to);
-            BuildView();
             //執行配對演算邏輯
-            MatchLog();
+            MatchLogic();
+            //刷新視覺
+            BuildView();
         }
 
-        private void MatchLog()
+        private void MatchLogic()
         {
             //掃描結果
             MatchResult result = _matchFinder.FindMatches(_boardModel);
 
             if (!result.HasMatch) return;
-
-            //Debug.Log($"配到{result.LineCount}條");
-
+            //消除
             foreach (MatchLine line in result.Lines)
             {
                 _boardModel.ClearGems(line.Coords);
             }
+            //落珠
+            _gravityResolver.Resolve(_boardModel);
+            //補珠
+            _fillService.Fill(_boardModel);
         }
         #endregion 私有方法
     }
