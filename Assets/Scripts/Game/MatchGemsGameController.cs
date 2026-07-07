@@ -15,12 +15,21 @@ namespace MatchGems.Game
         [SerializeField] private BoardInput _boardInput;
         [SerializeField] private int _width = 8;
         [SerializeField] private int _height = 8;
+        /// <summary>
+        /// 交換珠的移動時間
+        /// </summary>
+        [SerializeField] private float _swapAnimationDuration = 0.3f;
         private BoardModel _boardModel;
         private GridMapper _gridMapper;
         /// <summary>
         /// 預建立的流程控制器
         /// </summary>
         private readonly BoardFlowController _boardFlowController = new BoardFlowController();
+        /// <summary>
+        /// 主流程是否正在忙碌：
+        /// 非處於待機狀態(運算中)
+        /// </summary>
+        private bool _isBusy => _boardFlowController.State != BoardState.Idle;
         #endregion 基本參數
 
         #region 生命週期
@@ -72,12 +81,23 @@ namespace MatchGems.Game
         /// </summary>
         /// <param name="from">起始</param>
         /// <param name="to">目標</param>
-        private void TrySwap(CellCoord from, CellCoord to)
+        private async void TrySwap(CellCoord from, CellCoord to)
         {
+            //嘗試執行交換資料(純資料)
             if (!_boardFlowController.TrySwap(_boardModel, from, to)) return;
-            //刷新視覺
-            BuildView();
+            //嘗試執行交換動畫(純視覺)
+            await _boardView.AnimateSwapAsync(from, to, _swapAnimationDuration);
+            //動畫任務結束
+
         }
         #endregion 私有方法
+
+        #region 生命週期
+        private void Update()
+        {
+            if (_isBusy) return;
+            //遊戲正在執行邏輯運算，阻擋任何即時性操作
+        }
+        #endregion 生命週期
     }
 }

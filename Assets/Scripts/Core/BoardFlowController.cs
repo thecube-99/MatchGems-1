@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace MatchGems.Core
 {
@@ -28,15 +29,13 @@ namespace MatchGems.Core
 
         #region 公開方法
         /// <summary>
-        /// 補充
+        /// 回到待命狀態
         /// </summary>
-        /// <param name="board"></param>
-        public void Fill(BoardModel board)
+        public void SetIdle()
         {
-            State = BoardState.Falling;
-            _fillService.Fill(board);
-        }
+            State = BoardState.Idle;
 
+        }
         /// <summary>
         /// 嘗試執行玩家的資料交換操作
         /// </summary>
@@ -47,23 +46,63 @@ namespace MatchGems.Core
             //轉換狀態
             State = BoardState.Swapping;
             board.SwapGems(from, to);
-            //掃描結果
-            MatchResult result = _matchFinder.FindMatches(board);
+            /*
             if (!result.HasMatch)
             {//沒配對組
                 State = BoardState.Idle;
                 return false;
             }
             //
-            ResolveMatches(board, result);
+            ResolveMatches(board, result);*/
             return true;
+        }
+
+        /// <summary>
+        /// 搜索棋盤上全部的配對線結果
+        /// </summary>
+        /// <returns>配對線結果</returns>
+        public MatchResult FindMatches(BoardModel board)
+        {
+            return _matchFinder.FindMatches(board);
+        }
+        /// <summary>
+        /// 一組一拍式清除流程
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="result"></param>
+        public void ClearStep(BoardModel board, MatchResult result)
+        {
+            State = BoardState.Clearing;
+            List<CellCoord> coords = result.GetUniqueCoords();
+        }
+
+        /// <summary>
+        /// 結算：落珠/補珠
+        /// </summary>
+        /// <param name="board"></param>
+        public void Settle(BoardModel board)
+        {
+            State = BoardState.Falling;
+            _gravityResolver.Resolve(board);
+            
+            Fill(board);
+        }
+
+        /// <summary>
+        /// 補充寶石
+        /// </summary>
+        /// <param name="board"></param>
+        public void Fill(BoardModel board)
+        {
+            State = BoardState.Filling;
+            _fillService.Fill(board);
         }
         #endregion 公開方法
 
         #region 私有方法
         private void ResolveMatches(BoardModel board, MatchResult result)
         {
-            State = BoardState.Clearing;
+            
             while (result.HasMatch)
             {
                 board.ClearGems(result.GetUniqueCoords());

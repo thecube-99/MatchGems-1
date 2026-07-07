@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-using MatchGems.Core;//導入核心資料
+using MatchGems.Core;
+using System.Threading.Tasks;//導入核心資料
 
 namespace MatchGems.View
 {
@@ -53,6 +54,16 @@ namespace MatchGems.View
             SpriteRenderer.sprite = GetDefaultSprite();
             SpriteRenderer.color = GetColor(gemData.Color);
             transform.localScale = Vector3.one * _tileScale;
+        }
+
+        public async Task MoveToAsync(Vector3 targetPos, float duration)
+        {
+            if (duration <= 0)
+            {//移動時間為0，瞬間完成任務
+                transform.position = targetPos;
+                return;//任務結束
+            }
+            
         }
         #endregion 公開功能
 

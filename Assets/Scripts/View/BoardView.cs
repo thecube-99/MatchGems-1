@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using MatchGems.Core;
+using System.Threading.Tasks;
 
 namespace MatchGems.View
 {
@@ -53,6 +54,24 @@ namespace MatchGems.View
                 }
             }
         }
+        /// <summary>
+        /// [等候型任務]寶石交換動畫
+        /// </summary>
+        /// <param name="A">A石</param>
+        /// <param name="B">B石</param>
+        /// <param name="duration">運作時常</param>
+        /// <returns>任務狀態</returns>
+        public async Task AnimateSwapAsync(CellCoord A, CellCoord B, float duration)
+        {
+            GemTile tileA = GetTile(A);
+            GemTile tileB = GetTile(B);
+            if (tileA == null || tileB == null) return;//任務結束
+            //各別建立交換任務
+            Task moveA = tileA.MoveToAsync(_gridMapper.ToWorld(B), duration);
+            Task moveB = tileB.MoveToAsync(_gridMapper.ToWorld(A), duration);
+            //等待任務都完成
+            await Task.WhenAll(moveA, moveB);
+        }
         #endregion 公開方法
 
         #region 私有方法
@@ -66,6 +85,18 @@ namespace MatchGems.View
         {
             Vector3 position = new Vector3(x * CellWorldSize, y * CellWorldSize, 0);
             return Instantiate(_tilePrefab, position, Quaternion.identity, transform);
+        }
+
+        /// <summary>
+        /// 取得指定位置的寶石元件
+        /// </summary>
+        /// <param name="coord">定位</param>
+        /// <returns>寶石元件</returns>
+        private GemTile GetTile(CellCoord coord)
+        {
+            if (_tiles == null || coord.X < 0 || coord.Y < 0 || coord.X >= _tiles.GetLength(0) || coord.Y >= _tiles.GetLength(1)) return null;
+            //檢查視覺圖陣列是否存在，以及訪問座標在陣列內
+            return _tiles[coord.X, coord.Y];
         }
         /// <summary>
         /// 清除所有寶石磚
