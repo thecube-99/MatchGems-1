@@ -18,17 +18,9 @@ namespace MatchGems.Game
         private BoardModel _boardModel;
         private GridMapper _gridMapper;
         /// <summary>
-        /// 預建立的配對檢查器
+        /// 預建立的流程控制器
         /// </summary>
-        private readonly MatchFinder _matchFinder = new MatchFinder();
-        /// <summary>
-        /// 預建立的落下解析器
-        /// </summary>
-        private readonly GravityResolver _gravityResolver = new GravityResolver();
-        /// <summary>
-        /// 預建立的寶石填充服務
-        /// </summary>
-        private readonly FillService _fillService = new FillService();
+        private readonly BoardFlowController _boardFlowController = new BoardFlowController();
         #endregion 基本參數
 
         #region 生命週期
@@ -48,8 +40,8 @@ namespace MatchGems.Game
         private void CreateBoard()
         {
             _boardModel = new BoardModel(_width, _height);
-
-            _fillService.Fill(_boardModel);
+            //流程控制：補珠
+            _boardFlowController.Fill(_boardModel);
         }
         /// <summary>
         /// 建立轉換器
@@ -82,27 +74,9 @@ namespace MatchGems.Game
         /// <param name="to">目標</param>
         private void TrySwap(CellCoord from, CellCoord to)
         {
-            if (!_boardModel.IsInside(to)) return;
-            if (!_boardModel.IsAdjacent(from, to)) return;
-            _boardModel.SwapGems(from, to);
-            //執行配對演算邏輯
-            MatchLogic();
+            if (!_boardFlowController.TrySwap(_boardModel, from, to)) return;
             //刷新視覺
             BuildView();
-        }
-
-        private void MatchLogic()
-        {
-            //掃描結果
-            MatchResult result = _matchFinder.FindMatches(_boardModel);
-
-            if (!result.HasMatch) return;
-            //消除
-            _boardModel.ClearGems(result);
-            //落珠
-            _gravityResolver.Resolve(_boardModel);
-            //補珠
-            _fillService.Fill(_boardModel);
         }
         #endregion 私有方法
     }
