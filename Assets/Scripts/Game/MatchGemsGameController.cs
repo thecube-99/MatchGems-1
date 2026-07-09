@@ -23,6 +23,10 @@ namespace MatchGems.Game
         /// 清除珠的時間
         /// </summary>
         [SerializeField] private float _clearAnimationDuration = 0.2f;
+        /// <summary>
+        /// 落下移動時間
+        /// </summary>
+        [SerializeField] private float _buildAnimationDuration = 0.3f;
         private BoardModel _boardModel;
         private GridMapper _gridMapper;
         /// <summary>
@@ -107,7 +111,8 @@ namespace MatchGems.Game
                 _boardFlowController.ClearStep(_boardModel, result);
                 await _boardView.AnimationClearAsync(result.GetUniqueCoords(), _clearAnimationDuration);
                 //結算狀況(落/補) + 下落動態表演
-
+                _boardFlowController.Settle(_boardModel);
+                await _boardView.AnimateBuildAsync(_boardModel, _gridMapper, _buildAnimationDuration);
                 //再次檢查有無配對
                 result = _boardFlowController.FindMatches(_boardModel);
             }

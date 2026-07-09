@@ -1,7 +1,9 @@
 ﻿using MatchGems.Core;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace MatchGems.View
 {
@@ -56,6 +58,31 @@ namespace MatchGems.View
             }
         }
 
+        public async Task AnimateBuildAsync(BoardModel board, GridMapper gridMapper, float duration)
+        {
+            _gridMapper = gridMapper;
+            //建立移動的清單
+            List<Task> moves = new List<Task>();
+            //全盤任務建立
+            for (int y = 0; y < board.Height; y++)
+            {
+                for (int x = 0; x < board.Width; x++)
+                {
+                    //棋盤格座標
+                    CellCoord coord = new CellCoord(x, y);
+                    //棋盤格對應的世界座標(位移的定位)
+                    Vector3 target = _gridMapper.ToWorld(coord);
+
+                    if (!board.HasGem(coord)) continue;//無寶石可操作跳過
+                    //新建立
+                    GemTile tile = CreateTileAt(SpawnAbove(board, coord));
+
+
+
+                    moves.Add(tile.MoveToAsync(target, duration));
+                }
+            }
+        }
         public void GemTileAsync(CellCoord from, CellCoord to)
         {
             GemTile tmp = _tiles[to.X, to.Y];
@@ -110,8 +137,22 @@ namespace MatchGems.View
         /// <returns>寶石磚</returns>
         private GemTile CreateTile(int x, int y)
         {
-            Vector3 position = new Vector3(x * CellWorldSize, y * CellWorldSize, 0);
-            return Instantiate(_tilePrefab, position, Quaternion.identity, transform);
+            //Vector3 position = new Vector3(x * CellWorldSize, y * CellWorldSize, 0);
+            return CreateTileAt(_gridMapper.ToWorld(new CellCoord(x, y)));
+        }
+        private GemTile CreateTile(CellCoord coord)
+        {
+            //Vector3 position = new Vector3(x * CellWorldSize, y * CellWorldSize, 0);
+            return CreateTileAt(_gridMapper.ToWorld(coord));
+        }
+        /// <summary>
+        /// 建立寶石磚在世界座標
+        /// </summary>
+        /// <param name="pos">指定世界座標</param>
+        /// <returns>寶石磚</returns>
+        private GemTile CreateTileAt(Vector3 pos)
+        {
+            return Instantiate(_tilePrefab, pos, Quaternion.identity, transform);
         }
 
         /// <summary>
@@ -125,6 +166,13 @@ namespace MatchGems.View
             //檢查視覺圖陣列是否存在，以及訪問座標在陣列內
             return _tiles[coord.X, coord.Y];
         }
+
+        private Vector3 SpawnAbove(BoardModel board, CellCoord coord)
+        {
+            Vector3 top = _gridMapper.ToWorld(new CellCoord(coord.X, board.Height));
+            return new Vector3();
+        }
+
         #endregion 私有方法
     }
 }
