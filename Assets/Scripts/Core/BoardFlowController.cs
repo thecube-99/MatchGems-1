@@ -88,7 +88,7 @@ namespace MatchGems.Core
         /// <param name="board"></param>
         public void Fill(BoardModel board)
         {
-            State = BoardState.Filling;
+            //State = BoardState.Filling;
             _fillService.Fill(board);
         }
         #endregion 公開方法

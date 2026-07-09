@@ -107,6 +107,7 @@ namespace MatchGems.Game
                 _boardFlowController.ClearStep(_boardModel, result);
                 await _boardView.AnimationClearAsync(result.GetUniqueCoords(), _clearAnimationDuration);
                 //結算狀況(落/補) + 下落動態表演
+
                 //再次檢查有無配對
                 result = _boardFlowController.FindMatches(_boardModel);
             }

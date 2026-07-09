@@ -101,11 +101,9 @@ namespace MatchGems.Core
         /// <param name="to">目標</param>
         public void SwapGems(CellCoord from, CellCoord to)
         {
-            //Debug.Log($"{_gems[from.X, from.Y].Color}→{_gems[to.X, to.Y].Color}");
             GemData tmp = _gems[to.X, to.Y];
             _gems[to.X, to.Y] = _gems[from.X, from.Y];
             _gems[from.X, from.Y] = tmp;
-           // Debug.Log($"{_gems[from.X, from.Y].Color}｜{_gems[to.X, to.Y].Color}");
         }
 
         /// <summary>

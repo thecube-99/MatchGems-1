@@ -55,6 +55,13 @@ namespace MatchGems.View
                 }
             }
         }
+
+        public void GemTileAsync(CellCoord from, CellCoord to)
+        {
+            GemTile tmp = _tiles[to.X, to.Y];
+            _tiles[to.X, to.Y] = _tiles[from.X, from.Y];
+            _tiles[from.X, from.Y] = tmp;
+        }
         /// <summary>
         /// [等候型任務]寶石交換動畫
         /// </summary>
@@ -72,6 +79,7 @@ namespace MatchGems.View
             Task moveB = tileB.MoveToAsync(_gridMapper.ToWorld(A), duration);
             //等待任務都完成
             await Task.WhenAll(moveA, moveB);
+            GemTileAsync(A, B);//實體視覺資料位置同步
         }
         /// <summary>
         /// [等候型任務]寶石清除動畫
@@ -116,19 +124,6 @@ namespace MatchGems.View
             if (_tiles == null || coord.X < 0 || coord.Y < 0 || coord.X >= _tiles.GetLength(0) || coord.Y >= _tiles.GetLength(1)) return null;
             //檢查視覺圖陣列是否存在，以及訪問座標在陣列內
             return _tiles[coord.X, coord.Y];
-        }
-        /// <summary>
-        /// 清除所有寶石磚
-        /// </summary>
-        private void ClearTiles()
-        {
-            //Destroy(transform.GetChild(0).gameObject);
-            Debug.Log(transform.childCount);
-            //一種連發的 if
-            /*while (transform.childCount > 0)
-            {//不斷刪除第一個子物件，直到歸0為止
-                Destroy(transform.GetChild(0).gameObject);
-            }*/
         }
         #endregion 私有方法
     }

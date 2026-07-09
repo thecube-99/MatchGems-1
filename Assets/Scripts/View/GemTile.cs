@@ -85,10 +85,33 @@ namespace MatchGems.View
             //釘板：清理誤差值
             transform.position = targetPos;
         }
-
+        /// <summary>
+        /// 將 Tile 縮小到等同消失(指定時限)
+        /// </summary>
+        /// <param name="duration">動畫時長</param>
+        /// <returns></returns>
         public async Task PopAsync(float duration)
         {
+            if (duration <= 0)
+            {//縮放時間為0，瞬間完成任務
+                transform.localScale = Vector3.zero;
+                return;//任務結束
+            }
+            //動態版本
+            Vector3 startScale = transform.localScale;//起始大小
+            float timer = 0f;//計時
 
+            while (timer < duration) 
+            {
+                if (this == null) return;
+                timer += Time.deltaTime;
+                float t = Mathf.Clamp01(timer / duration);//計算運作進度%
+                //縮放線性插值靠攏
+                transform.localScale = Vector3.Lerp(startScale, Vector3.zero, t);
+                await Task.Yield();//等一幀：減慢迴圈使其與FPS同步
+            }
+            //釘板：清理誤差值
+            transform.localScale = Vector3.zero;
         }
         #endregion 公開功能
 
