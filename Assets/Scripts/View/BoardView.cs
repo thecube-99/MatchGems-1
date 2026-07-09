@@ -1,6 +1,7 @@
-﻿using UnityEngine;
-using MatchGems.Core;
+﻿using MatchGems.Core;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MatchGems.View
 {
@@ -59,7 +60,7 @@ namespace MatchGems.View
         /// </summary>
         /// <param name="A">A石</param>
         /// <param name="B">B石</param>
-        /// <param name="duration">運作時常</param>
+        /// <param name="duration">運作時長</param>
         /// <returns>任務狀態</returns>
         public async Task AnimateSwapAsync(CellCoord A, CellCoord B, float duration)
         {
@@ -71,6 +72,24 @@ namespace MatchGems.View
             Task moveB = tileB.MoveToAsync(_gridMapper.ToWorld(A), duration);
             //等待任務都完成
             await Task.WhenAll(moveA, moveB);
+        }
+        /// <summary>
+        /// [等候型任務]寶石清除動畫
+        /// </summary>
+        /// <param name="list">配對寶石清單</param>
+        /// <param name="duration">運作時長</param>
+        /// <returns>任務狀態</returns>
+        public async Task AnimationClearAsync(List<CellCoord> list, float duration)
+        {//準備對應的任務清單：執行消除任務 * N
+            List<Task> pops = new List<Task>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                GemTile tile = GetTile(list[i]);
+                _tiles[list[i].X, list[i].Y] = null;//消除紀錄
+                pops.Add(tile.PopAsync(duration));//加入任務待辦
+            }
+            //等待整組任務都完成
+            await Task.WhenAll(pops);
         }
         #endregion 公開方法
 

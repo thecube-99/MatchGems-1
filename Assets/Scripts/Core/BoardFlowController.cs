@@ -46,14 +46,6 @@ namespace MatchGems.Core
             //轉換狀態
             State = BoardState.Swapping;
             board.SwapGems(from, to);
-            /*
-            if (!result.HasMatch)
-            {//沒配對組
-                State = BoardState.Idle;
-                return false;
-            }
-            //
-            ResolveMatches(board, result);*/
             return true;
         }
 
@@ -74,6 +66,8 @@ namespace MatchGems.Core
         {
             State = BoardState.Clearing;
             List<CellCoord> coords = result.GetUniqueCoords();
+            //清除資料
+            board.ClearGems(coords);
         }
 
         /// <summary>

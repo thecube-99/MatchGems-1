@@ -19,6 +19,10 @@ namespace MatchGems.Game
         /// 交換珠的移動時間
         /// </summary>
         [SerializeField] private float _swapAnimationDuration = 0.3f;
+        /// <summary>
+        /// 清除珠的時間
+        /// </summary>
+        [SerializeField] private float _clearAnimationDuration = 0.2f;
         private BoardModel _boardModel;
         private GridMapper _gridMapper;
         /// <summary>
@@ -87,8 +91,27 @@ namespace MatchGems.Game
             if (!_boardFlowController.TrySwap(_boardModel, from, to)) return;
             //嘗試執行交換動畫(純視覺)
             await _boardView.AnimateSwapAsync(from, to, _swapAnimationDuration);
-            //動畫任務結束
-
+            //動畫任務結束：檢查是否為無效移動(沒配對)
+            MatchResult result = _boardFlowController.FindMatches(_boardModel);
+            if (!result.HasMatch)
+            {//沒配到：資料換回，動畫回彈
+                _boardModel.SwapGems(from, to);
+                await _boardView.AnimateSwapAsync(from, to, _swapAnimationDuration);
+                _boardFlowController.SetIdle();//回到待機
+                return;//任務中斷
+            }
+            //有配對：進入循環(進到忙碌計算)
+            while (result.HasMatch)
+            {
+                //清除資料(線) + 消除動態表演
+                _boardFlowController.ClearStep(_boardModel, result);
+                await _boardView.AnimationClearAsync(result.GetUniqueCoords(), _clearAnimationDuration);
+                //結算狀況(落/補) + 下落動態表演
+                //再次檢查有無配對
+                result = _boardFlowController.FindMatches(_boardModel);
+            }
+            //無任何天降配對後
+            _boardFlowController.SetIdle();//回到待機
         }
         #endregion 私有方法
 
