@@ -18,6 +18,11 @@ namespace MatchGems.View
         [SerializeField] private GemTile _tilePrefab;
         private GemTile[,] _tiles;
         private GridMapper _gridMapper;
+        /// <summary>
+        /// 回收池(物件池設計模式)
+        /// 隊列：先進先出
+        /// </summary>
+        private readonly Queue<GemTile> _standby = new Queue<GemTile>();
         #endregion 基本參數
 
         #region 公開屬性
@@ -61,6 +66,9 @@ namespace MatchGems.View
         public async Task AnimateBuildAsync(BoardModel board, GridMapper gridMapper, float duration)
         {
             _gridMapper = gridMapper;
+            Dictionary<GemData, GemTile> prevByGem = new Dictionary<GemData, GemTile>();//上一輪對照
+            Dictionary<GemData, GemTile> nextByGem = new Dictionary<GemData, GemTile>();//新一輪對照
+            GemTile[,] nextTiles = new GemTile[board.Width, board.Height];//新面板視覺資料
             //建立移動的清單
             List<Task> moves = new List<Task>();
             //全盤任務建立
@@ -70,19 +78,28 @@ namespace MatchGems.View
                 {
                     //棋盤格座標
                     CellCoord coord = new CellCoord(x, y);
+                    if (!board.HasGem(coord)) continue;//無寶石可操作跳過
+                    GemData gemData = board.GetGem(coord);
                     //棋盤格對應的世界座標(位移的定位)
                     Vector3 target = _gridMapper.ToWorld(coord);
-
-                    if (!board.HasGem(coord)) continue;//無寶石可操作跳過
-                    //新建立
-                    GemTile tile = CreateTileAt(SpawnAbove(board, coord));
-
-
-
+                    if (prevByGem.TryGetValue(gemData, out GemTile tile) && tile != null)
+                    {
+                        prevByGem.Remove(gemData);//活珠：下墜
+                    }
+                    else
+                    {
+                        tile = GetFromStandby(SpawnAbove(board, coord));
+                    }
+                    tile.SetGem(gemData);//重設資料(顏色外觀避免殘留)
+                    nextTiles[x, y] = tile;
+                    nextByGem[gemData] = tile;
                     moves.Add(tile.MoveToAsync(target, duration));
                 }
             }
+            _tiles = nextTiles;//面板視覺資料更新
+            await Task.WhenAll(moves);//等待全部移動結束
         }
+
         public void GemTileAsync(CellCoord from, CellCoord to)
         {
             GemTile tmp = _tiles[to.X, to.Y];
@@ -120,8 +137,10 @@ namespace MatchGems.View
             for (int i = 0; i < list.Count; i++)
             {
                 GemTile tile = GetTile(list[i]);
+                if (tile == null) continue;//防呆：避免回收空物件
                 _tiles[list[i].X, list[i].Y] = null;//消除紀錄
                 pops.Add(tile.PopAsync(duration));//加入任務待辦
+                RecycleToStandby(tile);//執行回收
             }
             //等待整組任務都完成
             await Task.WhenAll(pops);
@@ -129,6 +148,26 @@ namespace MatchGems.View
         #endregion 公開方法
 
         #region 私有方法
+        /// <summary>
+        /// 將消除的寶石磚收進回收池
+        /// </summary>
+        /// <param name="tile"></param>
+        private void RecycleToStandby(GemTile tile)
+        {
+            _standby.Enqueue(tile);//加入回收池，排隊待命被取用
+        }
+        /// <summary>
+        /// 從回收池取得寶石磚
+        /// </summary>
+        /// <param name="spawnPos">到指定位置</param>
+        /// <returns>寶石磚</returns>
+        private GemTile GetFromStandby(Vector3 spawnPos)
+        {
+            GemTile tile = _standby.Count > 0 ? _standby.Dequeue() : CreateTileAt(spawnPos);//當有物件在隊列時正常抽取，否則建立新的到指定位置
+            tile.transform.position = spawnPos;//重設位置
+            tile.transform.localScale = Vector3.one;//重設縮放
+            return tile;
+        }
         /// <summary>
         /// 依照定位實例化寶石磚
         /// </summary>
@@ -166,11 +205,16 @@ namespace MatchGems.View
             //檢查視覺圖陣列是否存在，以及訪問座標在陣列內
             return _tiles[coord.X, coord.Y];
         }
-
+        /// <summary>
+        /// 補珠的起點：棋盤的頂端+1單位
+        /// </summary>
+        /// <param name="board">棋盤資料</param>
+        /// <param name="coord">定位</param>
+        /// <returns>新座標</returns>
         private Vector3 SpawnAbove(BoardModel board, CellCoord coord)
         {
             Vector3 top = _gridMapper.ToWorld(new CellCoord(coord.X, board.Height));
-            return new Vector3();
+            return top;
         }
 
         #endregion 私有方法
