@@ -76,9 +76,11 @@ namespace MatchGems.Core
         /// <param name="board"></param>
         public void Settle(BoardModel board)
         {
+            //移動資料
             State = BoardState.Falling;
             _gravityResolver.Resolve(board);
-            
+            //補齊資料
+            State = BoardState.Filling;
             Fill(board);
         }
 
@@ -88,21 +90,8 @@ namespace MatchGems.Core
         /// <param name="board"></param>
         public void Fill(BoardModel board)
         {
-            //State = BoardState.Filling;
             _fillService.Fill(board);
         }
         #endregion 公開方法
-
-        #region 私有方法
-        private void ResolveMatches(BoardModel board, MatchResult result)
-        {
-            
-            while (result.HasMatch)
-            {
-                board.ClearGems(result.GetUniqueCoords());
-            }
-
-        }
-        #endregion 私有方法
     }
 }

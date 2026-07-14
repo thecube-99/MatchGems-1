@@ -62,9 +62,13 @@ namespace MatchGems.View
             {
                 for (int x = 0; x < board.Width; x++)
                 {
+                    //從棋盤取回資料
                     GemData gemData = board.GetGem(x, y);
+                    //建立視覺物件
                     _tiles[x, y] = CreateTile(x, y);
+                    //設定對應視覺(顏色)
                     _tiles[x, y].SetGem(gemData);
+                    //當前面盤資料和視覺的紀錄
                     _prevByGem[gemData] = _tiles[x, y];
                 }
             }
@@ -73,8 +77,6 @@ namespace MatchGems.View
         public async Task AnimateBuildAsync(BoardModel board, GridMapper gridMapper, float duration)
         {
             _gridMapper = gridMapper;
-            
-            //_nextByGem.Clear();//新一輪對照清除
 
             //建立移動的清單
             List<Task> moves = new List<Task>();
@@ -90,18 +92,18 @@ namespace MatchGems.View
                     GemData gemData = board.GetGem(coord);
                     //棋盤格對應的世界座標(位移的定位)
                     Vector3 target = _gridMapper.ToWorld(coord);
-                    //嘗試在舊面盤找對應的寶石資料
+                    //嘗試用資料在舊面盤找對應的寶石視覺物件
                     if (_prevByGem.TryGetValue(gemData, out GemTile tile) && tile != null)
                     {//活珠(本來就在)：下墜(不一定會發生)
                         _prevByGem.Remove(gemData);
                     }
                     else
-                    {
+                    {//重新連結回收再用的視覺給新寶石資料
                         tile = GetFromStandby(SpawnAbove(board, coord));
                     }
                     tile.SetGem(gemData);//重設資料(顏色外觀避免殘留)
-                    _tiles[x, y] = tile;//更新面板視覺資料
-                    _nextByGem[gemData] = tile;//紀錄未來的樣子
+                    _tiles[x, y] = tile;//更新面板視覺資料到新位置
+                    _nextByGem[gemData] = tile;//紀錄這筆資料的樣子
                     moves.Add(tile.MoveToAsync(target, duration));
                 }
             }
@@ -141,7 +143,7 @@ namespace MatchGems.View
         /// <param name="list">配對寶石清單</param>
         /// <param name="duration">運作時長</param>
         /// <returns>任務狀態</returns>
-        public async Task AnimationClearAsync(List<CellCoord> list, float duration)
+        public async Task AnimateClearAsync(List<CellCoord> list, float duration)
         {//準備對應的任務清單：執行消除任務 * N
             List<Task> pops = new List<Task>();
             for (int i = 0; i < list.Count; i++)

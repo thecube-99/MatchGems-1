@@ -109,7 +109,7 @@ namespace MatchGems.Game
             {
                 //清除資料(線) + 消除動態表演
                 _boardFlowController.ClearStep(_boardModel, result);
-                await _boardView.AnimationClearAsync(result.GetUniqueCoords(), _clearAnimationDuration);
+                await _boardView.AnimateClearAsync(result.GetUniqueCoords(), _clearAnimationDuration);
                 //結算狀況(落/補) + 下落動態表演
                 _boardFlowController.Settle(_boardModel);
                 await _boardView.AnimateBuildAsync(_boardModel, _gridMapper, _buildAnimationDuration);
