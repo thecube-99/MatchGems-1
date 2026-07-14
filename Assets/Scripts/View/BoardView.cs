@@ -23,6 +23,11 @@ namespace MatchGems.View
         /// 隊列：先進先出
         /// </summary>
         private readonly Queue<GemTile> _standby = new Queue<GemTile>();
+        /// <summary>
+        /// 上一輪對照字典<資料，視覺>
+        /// </summary>
+        private Dictionary<GemData, GemTile> _prevByGem = new Dictionary<GemData, GemTile>();
+        private Dictionary<GemData, GemTile> _nextByGem = new Dictionary<GemData, GemTile>();
         #endregion 基本參數
 
         #region 公開屬性
@@ -48,7 +53,7 @@ namespace MatchGems.View
         public void Build(BoardModel board, GridMapper gridMapper)
         {
             _gridMapper = gridMapper;
-            //清理舊視覺資料
+            _prevByGem.Clear();//初建安全清除
             //ClearTiles();
             //產生與資料相同的視覺尺寸
             _tiles = new GemTile[board.Width, board.Height];
@@ -57,8 +62,10 @@ namespace MatchGems.View
             {
                 for (int x = 0; x < board.Width; x++)
                 {
+                    GemData gemData = board.GetGem(x, y);
                     _tiles[x, y] = CreateTile(x, y);
-                    _tiles[x, y].SetGem(board.GetGem(x, y));
+                    _tiles[x, y].SetGem(gemData);
+                    _prevByGem[gemData] = _tiles[x, y];
                 }
             }
         }
@@ -66,9 +73,9 @@ namespace MatchGems.View
         public async Task AnimateBuildAsync(BoardModel board, GridMapper gridMapper, float duration)
         {
             _gridMapper = gridMapper;
-            Dictionary<GemData, GemTile> prevByGem = new Dictionary<GemData, GemTile>();//上一輪對照
-            Dictionary<GemData, GemTile> nextByGem = new Dictionary<GemData, GemTile>();//新一輪對照
-            GemTile[,] nextTiles = new GemTile[board.Width, board.Height];//新面板視覺資料
+            
+            //_nextByGem.Clear();//新一輪對照清除
+
             //建立移動的清單
             List<Task> moves = new List<Task>();
             //全盤任務建立
@@ -79,24 +86,27 @@ namespace MatchGems.View
                     //棋盤格座標
                     CellCoord coord = new CellCoord(x, y);
                     if (!board.HasGem(coord)) continue;//無寶石可操作跳過
+                    //當前這一格的寶石資料
                     GemData gemData = board.GetGem(coord);
                     //棋盤格對應的世界座標(位移的定位)
                     Vector3 target = _gridMapper.ToWorld(coord);
-                    if (prevByGem.TryGetValue(gemData, out GemTile tile) && tile != null)
-                    {
-                        prevByGem.Remove(gemData);//活珠：下墜
+                    //嘗試在舊面盤找對應的寶石資料
+                    if (_prevByGem.TryGetValue(gemData, out GemTile tile) && tile != null)
+                    {//活珠(本來就在)：下墜(不一定會發生)
+                        _prevByGem.Remove(gemData);
                     }
                     else
                     {
                         tile = GetFromStandby(SpawnAbove(board, coord));
                     }
                     tile.SetGem(gemData);//重設資料(顏色外觀避免殘留)
-                    nextTiles[x, y] = tile;
-                    nextByGem[gemData] = tile;
+                    _tiles[x, y] = tile;//更新面板視覺資料
+                    _nextByGem[gemData] = tile;//紀錄未來的樣子
                     moves.Add(tile.MoveToAsync(target, duration));
                 }
             }
-            _tiles = nextTiles;//面板視覺資料更新
+
+            _prevByGem = _nextByGem;//下一輪的面盤紀錄成現在的樣子
             await Task.WhenAll(moves);//等待全部移動結束
         }
 
@@ -155,6 +165,7 @@ namespace MatchGems.View
         private void RecycleToStandby(GemTile tile)
         {
             _standby.Enqueue(tile);//加入回收池，排隊待命被取用
+            //tile.gameObject.SetActive(false);
         }
         /// <summary>
         /// 從回收池取得寶石磚
