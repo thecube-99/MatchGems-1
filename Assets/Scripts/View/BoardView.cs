@@ -77,9 +77,9 @@ namespace MatchGems.View
         public async Task AnimateBuildAsync(BoardModel board, GridMapper gridMapper, float duration)
         {
             _gridMapper = gridMapper;
-
             //建立移動的清單
             List<Task> moves = new List<Task>();
+
             //全盤任務建立
             for (int y = 0; y < board.Height; y++)
             {
