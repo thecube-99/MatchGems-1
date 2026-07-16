@@ -92,6 +92,26 @@ namespace MatchGems.Core
         {
             _fillService.Fill(board);
         }
+
+        /// <summary>
+        /// 套用重力：落下
+        /// </summary>
+        /// <param name="board"></param>
+        public List<TileMove> ApplyGravity(BoardModel board)
+        {
+            //移動資料
+            State = BoardState.Falling;
+            return _gravityResolver.Resolve(board);
+        }
+        /// <summary>
+        /// 套用填補：天降
+        /// </summary>
+        /// <param name="board"></param>
+        public List<TileMove> ApplyFill(BoardModel board)
+        {
+            State = BoardState.Filling;
+            return _fillService.Fill(board);
+        }
         #endregion 公開方法
     }
 }

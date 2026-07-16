@@ -15,8 +15,8 @@ namespace MatchGems.Core
         /// <summary>
         /// 定位用的座標暫存
         /// </summary>
-        private readonly CellCoord coordFrom = new CellCoord();
-        private readonly CellCoord coordTo = new CellCoord();
+        private CellCoord coordFrom;
+        private CellCoord coordTo;
         #region 公開方法
         /// <summary>
         /// PlaneA：原始墜落方式

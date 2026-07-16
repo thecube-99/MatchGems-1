@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -17,7 +18,7 @@ namespace MatchGems.Core
         /// <summary>
         /// 定位用的座標暫存
         /// </summary>
-        private readonly CellCoord coord = new CellCoord();
+        private CellCoord coord;
 
         #region 公開方法
         /// <summary>
@@ -44,11 +45,14 @@ namespace MatchGems.Core
         /// <returns>移動紀錄清單</returns>
         public List<TileMove> Fill(BoardModel board)
         {
+            moves.Clear();
+
             for (int x = 0; x < board.Width; x++)
             {
-                for (int y = 0; x < board.Height; x++)
+                for (int y = 0; y < board.Height; y++)
                 {
                     if (board.HasGem(coord)) continue;
+                    coord.Set(x, y);
                     //空位補珠
                     board.SetGem(coord, CreateRandomGem());
                     moves.Add(new TileMove(coord));
