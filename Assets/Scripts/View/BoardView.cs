@@ -44,19 +44,6 @@ namespace MatchGems.View
         }
         #endregion 生命週期
 
-        private void ReleaseGemTile()
-        {
-            if (_tilePool == null || _tiles == null) return;
-
-            for (int x = 0; x < _tiles.GetLength(0); x++)
-            {
-                for (int y = 0; y < _tiles.GetLength(1); y++)
-                {
-                    _tilePool.Release(_tiles[x, y]);
-                }
-            }
-        }
-
         #region 公開方法
         /// <summary>
         /// 依棋盤資料建立全部Tile視覺
@@ -65,7 +52,7 @@ namespace MatchGems.View
         public void Build(BoardModel board, GridMapper gridMapper)
         {
             _gridMapper = gridMapper;
-            ReleaseGemTile();//初建安全清除
+            ReleaseGemTiles();//初建安全清除
             //產生與資料相同的視覺尺寸
             _tiles = new GemTile[board.Width, board.Height];
 
@@ -121,6 +108,16 @@ namespace MatchGems.View
             await Task.WhenAll(moves);//等待全部移動結束
         }*/
 
+        public async Task AnimateFallAsync(BoardModel board, List<TileMove> falls, float duration)
+        {
+            
+        }
+
+        public async Task AnimateFillAsync(BoardModel board, List<TileMove> falls, float duration)
+        {
+            
+        }
+
         public void GemTileAsync(CellCoord from, CellCoord to)
         {
             GemTile tmp = _tiles[to.X, to.Y];
@@ -159,7 +156,7 @@ namespace MatchGems.View
             {
                 GemTile tile = GetTile(list[i]);
                 if (tile == null) continue;//防呆：避免回收空物件
-                _tiles[list[i].X, list[i].Y] = null;//消除紀錄
+                ReleaseeGemTile(list[i]);//物件池回收
                 pops.Add(tile.PopAsync(duration));//加入任務待辦
             }
             //等待整組任務都完成
@@ -168,7 +165,28 @@ namespace MatchGems.View
         #endregion 公開方法
 
         #region 私有方法
+        /// <summary>
+        /// 回物件池的 GemTile 消除紀錄
+        /// </summary>
+        /// <param name="coord"></param>
+        private void ReleaseeGemTile(CellCoord coord)
+        {
+            _tilePool.Release(_tiles[coord.X, coord.Y]);//收回物件池
+            _tiles[coord.X, coord.Y] = null;//消除紀錄
+        }
 
+        private void ReleaseGemTiles()
+        {
+            if (_tilePool == null || _tiles == null) return;
+
+            for (int x = 0; x < _tiles.GetLength(0); x++)
+            {
+                for (int y = 0; y < _tiles.GetLength(1); y++)
+                {
+                    _tilePool.Release(_tiles[x, y]);
+                }
+            }
+        }
         /// <summary>
         /// 依照定位實例化寶石磚
         /// </summary>
@@ -213,7 +231,6 @@ namespace MatchGems.View
             Vector3 top = _gridMapper.ToWorld(new CellCoord(coord.X, board.Height));
             return top;
         }
-
         #endregion 私有方法
     }
 }
