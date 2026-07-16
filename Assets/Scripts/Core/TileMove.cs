@@ -14,8 +14,11 @@ namespace MatchGems.Core
         /// 落點格
         /// </summary>
         public CellCoord To { get; }
+
+        public bool IsNew { get; }
+
         /// <summary>
-        /// 建立移動紀錄
+        /// 建立舊紀錄(移動)
         /// </summary>
         /// <param name="from">來源格</param>
         /// <param name="to">落點格</param>
@@ -23,6 +26,17 @@ namespace MatchGems.Core
         {
             From = from;
             To = to;
+            IsNew = false;//舊珠
+        }
+        /// <summary>
+        /// 建立新紀錄(天降)
+        /// </summary>
+        /// <param name="coord">定位格</param>
+        public TileMove(CellCoord coord)
+        {
+            From = coord;
+            To = coord;
+            IsNew = true;//新珠：需要從畫面外下來
         }
     }
 }
