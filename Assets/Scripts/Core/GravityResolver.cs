@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace MatchGems.Core
 {
@@ -17,6 +16,7 @@ namespace MatchGems.Core
         /// </summary>
         private CellCoord coordFrom;
         private CellCoord coordTo;
+
         #region 公開方法
         /// <summary>
         /// PlaneA：原始墜落方式

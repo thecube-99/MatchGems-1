@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace MatchGems.Core
@@ -51,8 +49,9 @@ namespace MatchGems.Core
             {
                 for (int y = 0; y < board.Height; y++)
                 {
-                    if (board.HasGem(coord)) continue;
                     coord.Set(x, y);
+                    if (board.HasGem(coord)) continue;
+                    
                     //空位補珠
                     board.SetGem(coord, CreateRandomGem());
                     moves.Add(new TileMove(coord));
@@ -60,6 +59,7 @@ namespace MatchGems.Core
             }
             return moves;
         }
+
         /// <summary>
         /// 建立隨機的寶石類型
         /// </summary>
