@@ -25,6 +25,10 @@ namespace MatchGems.Core
         /// 是否有產生任何配對
         /// </summary>
         public bool HasMatch => LineCount > 0;
+        /// <summary>
+        /// 對外公開的分組清單唯讀接口
+        /// </summary>
+        public IReadOnlyList<MatchLine> Line => _lines;
         #endregion 公開資訊
 
         #region 公開方法

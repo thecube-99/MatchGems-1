@@ -140,7 +140,7 @@ namespace MatchGems.View
         /// <param name="list">配對寶石清單</param>
         /// <param name="duration">運作時長</param>
         /// <returns>任務狀態</returns>
-        public async Task AnimateClearAsync(List<CellCoord> list, float duration)
+        public async Task AnimateClearAsync(IReadOnlyList<CellCoord> list, float duration)
         {//準備對應的任務清單：執行消除任務 * N
             List<Task> pops = new List<Task>();
             for (int i = 0; i < list.Count; i++)
