@@ -183,6 +183,9 @@ MonoBehaviour:
   _boardInput: {fileID: 519420033}
   _width: 8
   _height: 8
+  _swapAnimationDuration: 0.3
+  _clearAnimationDuration: 0.2
+  _buildAnimationDuration: 0.1
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

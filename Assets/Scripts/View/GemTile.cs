@@ -18,16 +18,7 @@ namespace MatchGems.View
         /// 視覺渲染延遲讀取
         /// </summary>
         private SpriteRenderer SpriteRenderer => _spriteRenderer == null ? _spriteRenderer = GetComponent<SpriteRenderer>() : _spriteRenderer;
-        /*{
-            get
-            {
-                if (_spriteRenderer == null)
-                {
-                    _spriteRenderer = GetComponent<SpriteRenderer>();
-                }
-                return _spriteRenderer; 
-            }
-        }*/
+
         /// <summary>
         /// [靜態]共用Sprite變數
         /// </summary>
@@ -36,16 +27,6 @@ namespace MatchGems.View
 
         #region 公開功能
         /// <summary>
-        /// 依照設定的寶石種類更新視覺
-        /// </summary>
-        /// <param name="gemType">寶石種類</param>
-        /*public void SetGem(GemType gemType)
-        {
-            SpriteRenderer.sprite = GetDefaultSprite();
-            SpriteRenderer.color = GetColor(gemType);
-            transform.localScale = Vector3.one * _tileScale;
-        }*/
-        /// <summary>
         /// 設定寶石資料並更新視覺
         /// </summary>
         /// <param name="gemData">寶石資料</param>
@@ -53,6 +34,17 @@ namespace MatchGems.View
         {
             SpriteRenderer.sprite = GetDefaultSprite();
             SpriteRenderer.color = GetColor(gemData.Color);
+            transform.localScale = Vector3.one * _tileScale;
+        }
+
+        /// <summary>
+        /// 重設寶石物理資訊
+        /// </summary>
+        /// <param name="pos"></param>
+        public void ResetGem(Vector3 pos, GemData gemData)
+        {
+            SpriteRenderer.color = GetColor(gemData.Color);
+            transform.position = pos;
             transform.localScale = Vector3.one * _tileScale;
         }
 

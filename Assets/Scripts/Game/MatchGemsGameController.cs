@@ -105,10 +105,13 @@ namespace MatchGems.Game
                 _boardFlowController.SetIdle();//回到待機
                 return;//任務中斷
             }
-
+            int comboCount = 0;
             //有配對：進入循環(進到忙碌計算)
             while (result.HasMatch)
             {
+                comboCount++;
+                Debug.Log($"連鎖：{comboCount} !!");
+
                 //清除資料(線) + 消除動態表演
                 _boardFlowController.ClearStep(_boardModel, result);
                 await _boardView.AnimateClearAsync(result.GetUniqueCoords(), _clearAnimationDuration);
@@ -119,7 +122,7 @@ namespace MatchGems.Game
 
                 //套用天降：填充資料
                 List<TileMove> fills = _boardFlowController.ApplyFill(_boardModel);
-                await _boardView.AnimateFillAsync(_boardModel, falls, _buildAnimationDuration);
+                await _boardView.AnimateFillAsync(_boardModel, fills, _buildAnimationDuration);
 
                 //再次檢查有無配對
                 result = _boardFlowController.FindMatches(_boardModel);

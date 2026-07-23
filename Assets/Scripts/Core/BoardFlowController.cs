@@ -71,20 +71,6 @@ namespace MatchGems.Core
         }
 
         /// <summary>
-        /// 結算：落珠/補珠
-        /// </summary>
-        /// <param name="board"></param>
-        public void Settle(BoardModel board)
-        {
-            //移動資料
-            State = BoardState.Falling;
-            _gravityResolver.Resolve(board);
-            //補齊資料
-            State = BoardState.Filling;
-            Fill(board);
-        }
-
-        /// <summary>
         /// 補充寶石
         /// </summary>
         /// <param name="board"></param>

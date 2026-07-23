@@ -69,53 +69,44 @@ namespace MatchGems.View
                 }
             }
         }
-
-        /*public async Task AnimateBuildAsync(BoardModel board, GridMapper gridMapper, float duration)
-        {
-            _gridMapper = gridMapper;
-            //建立移動的清單
-            List<Task> moves = new List<Task>();
-
-            //全盤任務建立
-            for (int y = 0; y < board.Height; y++)
-            {
-                for (int x = 0; x < board.Width; x++)
-                {
-                    //棋盤格座標
-                    CellCoord coord = new CellCoord(x, y);
-                    if (!board.HasGem(coord)) continue;//無寶石可操作跳過
-                    //當前這一格的寶石資料
-                    GemData gemData = board.GetGem(coord);
-                    //棋盤格對應的世界座標(位移的定位)
-                    Vector3 target = _gridMapper.ToWorld(coord);
-                    //嘗試用資料在舊面盤找對應的寶石視覺物件
-                    if (_prevByGem.TryGetValue(gemData, out GemTile tile) && tile != null)
-                    {//活珠(本來就在)：下墜(不一定會發生)
-                        _prevByGem.Remove(gemData);
-                    }
-                    else
-                    {//重新連結回收再用的視覺給新寶石資料
-                        tile = GetFromStandby(SpawnAbove(board, coord));
-                    }
-                    tile.SetGem(gemData);//重設資料(顏色外觀避免殘留)
-                    _tiles[x, y] = tile;//更新面板視覺資料到新位置
-                    _nextByGem[gemData] = tile;//紀錄這筆資料的樣子
-                    moves.Add(tile.MoveToAsync(target, duration));
-                }
-            }
-
-            _prevByGem = _nextByGem;//下一輪的面盤紀錄成現在的樣子
-            await Task.WhenAll(moves);//等待全部移動結束
-        }*/
-
+        /// <summary>
+        /// 活珠掉落移動
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="falls"></param>
+        /// <param name="duration"></param>
+        /// <returns></returns>
         public async Task AnimateFallAsync(BoardModel board, List<TileMove> falls, float duration)
         {
-            
+            GemTile[,] next = new GemTile[board.Width, board.Height];
+            List<Task> tasks = new List<Task>();
+            foreach (TileMove fall in falls)
+            {//舊珠的移動
+                GemTile tile = _tiles[fall.From.X, fall.From.Y];
+                next[fall.To.X, fall.To.Y] = tile;
+                tasks.Add(tile.MoveToAsync(_gridMapper.ToWorld(fall.To), duration));
+            }
+            _tiles = next;
+            await Task.WhenAll(tasks);
         }
-
-        public async Task AnimateFillAsync(BoardModel board, List<TileMove> falls, float duration)
+        /// <summary>
+        /// 新珠掉落移動
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="fills"></param>
+        /// <param name="duration"></param>
+        /// <returns></returns>
+        public async Task AnimateFillAsync(BoardModel board, List<TileMove> fills, float duration)
         {
-            
+            List<Task> tasks = new List<Task>();
+            foreach (TileMove fill in fills)
+            {//新珠的掉落
+                Vector3 target = _gridMapper.ToWorld(fill.To);//落點
+                GemTile tile = _tilePool.Get(SpawnAbove(board, fill.From), board.GetGem(fill.From));//算出頂點和置入新資料
+                _tiles[fill.To.X, fill.To.Y] = tile;//紀錄最終位子
+                tasks.Add(tile.MoveToAsync(target, duration));
+            }
+            await Task.WhenAll(tasks);
         }
 
         public void GemTileAsync(CellCoord from, CellCoord to)

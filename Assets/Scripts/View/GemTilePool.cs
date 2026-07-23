@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MatchGems.Core;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MatchGems.View
@@ -43,11 +44,10 @@ namespace MatchGems.View
         /// </summary>
         /// <param name="spawnPos"></param>
         /// <returns></returns>
-        public GemTile Get(Vector3 spawnPos)
+        public GemTile Get(Vector3 spawnPos, GemData data)
         {
             GemTile tile = _pool.Count > 0 ? _pool.Dequeue() : CreateTile();//當有物件在隊列時正常抽取，否則建立新的到指定位置
-            tile.transform.position = spawnPos;//重設位置
-            tile.transform.localScale = Vector3.one;//重設縮放
+            tile.ResetGem(spawnPos, data);//重設寶石位置/縮放
             return tile;
         }
 
